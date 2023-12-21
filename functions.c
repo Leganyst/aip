@@ -2,6 +2,15 @@
 #include <stdio.h>
 #include "types.h"
 
+
+/**
+ * @brief Проверяет, входит ли время в заданный интервал
+ * 
+ * @param time - время в формате год, месяц, день, час, минута, секунда (структура времени)
+ * @param start - начальный интервал (структура времени)
+ * @param end - конечный интервал (структура времени)
+ * @return int - 1 - входит, 0 - не входит
+ */
 int isTimeInInterval(const tDateTime *time, const tDateTime *start, const tDateTime *end)
 {
     if (time->year < start->year || (time->year == start->year && time->month < start->month) ||
@@ -24,6 +33,13 @@ int isTimeInInterval(const tDateTime *time, const tDateTime *start, const tDateT
     return 1;
 }
 
+/**
+ * @brief Вычисляет сумму стоимости звонка
+ * 
+ * @param call - информация о звонке (структура) 
+ * @param rate - информация о тарифе (структура)
+ * @return float - сумма стоимости
+ */
 float calculateSummCost(const tPhoneCall *call, const tRates *rate)
 {
     int code = call->code_service;
@@ -41,6 +57,13 @@ float calculateSummCost(const tPhoneCall *call, const tRates *rate)
     }
 }
 
+/**
+ * @brief Читает информацию о тарифах. Останавливается в том случае, когда среди перечней находит тариф "Междугородние звонки"
+ * Непосредственное изменение переменной rate.
+ * 
+ * @param rate - информация о тарифе (структура)
+ * @param rates - файл с информацией о тарифах
+ */
 void readRates(tRates *rate, FILE *rates)
 {
     wchar_t buffer_rate[300];
@@ -54,8 +77,19 @@ void readRates(tRates *rate, FILE *rates)
     }
 }
 
+/**
+ * @brief Проверяет информацию о звонке. Если что-то не так, то возвращает 1.
+ * 
+ * @param resultSumm - сумма стоимости (изменяется непосредственно)
+ * @param countCalls - количество звонков (изменяется непосредственно)
+ * @param bufferCallInfo - информация о звонке (строка с неотформатированными данными)
+ * @param call - информация о звонке (структура для записи данных)
+ * @param startTime - начальный интервал времени
+ * @param endTime - конечный интервал времени
+ * @return int - 0 или 1
+ */
 int checkCall(float* resultSumm, int* countCalls, char* bufferCallInfo, tPhoneCall* call, tDateTime* startTime, tDateTime* endTime) {
-    int isSearch = 0;
+    int isSearch = 1;
     sscanf(bufferCallInfo, "%lld, %d, %d.%d.%d %d:%d:%d, %d",
             &call->phone_number, &call->code_service,
             &call->call_time.day, &call->call_time.month, &call->call_time.year,
@@ -82,9 +116,17 @@ int checkCall(float* resultSumm, int* countCalls, char* bufferCallInfo, tPhoneCa
             // call.phone_number, call.code_service, call.duration_in_seconds);
         }
     }
+    return isSearch;
 }
 
-
+/**
+ * @brief Функция которая вызывается для каждого входного параметра в файле Param.ini. Является точкой входа по подсчету
+ * кол-ва звонков и их суммарной стоимости
+ * 
+ * @param buffer - информация о тесте (введенное неотформатированное время)
+ * @param report - файл для записи результата
+ * @return int - 0 или 1 (1 в случае проблемы или ошибки)
+ */
 int checkParams(char* buffer, FILE* report) {
         {
         tDateTime start_time;

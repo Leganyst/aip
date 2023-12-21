@@ -19,7 +19,6 @@ Cвязь внутри сети|   1 | 0.30 |     мин          |
 
 */
 
-
 int main(void)
 {
     setlocale(LC_ALL, "Russian");
