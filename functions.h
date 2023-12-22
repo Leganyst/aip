@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include "functions.c"
 
-#ifndef H_TYPES
-#define H_TYPES
+#ifndef H_FUNCTIONS
+#define H_FUNCTIONS
 
 int isTimeInInterval(const tDateTime *time, const tDateTime *start, const tDateTime *end);
 float calculateSummCost(const tPhoneCall *call, const tRates *rate);

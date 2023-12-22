@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "types.h"
 
-
 /**
  * @brief Проверяет, входит ли время в заданный интервал
  * 
@@ -78,10 +77,10 @@ void readRates(tRates *rate, FILE *rates)
 }
 
 /**
- * @brief Проверяет информацию о звонке. Если что-то не так, то возвращает 1.
+ * @brief Проверяет информацию о звонке. Если найдено - возвращает 1.
  * 
  * @param resultSumm - сумма стоимости (изменяется непосредственно)
- * @param countCalls - количество звонков (изменяется непосредственно)
+ * @par     am countCalls - количество звонков (изменяется непосредственно)
  * @param bufferCallInfo - информация о звонке (строка с неотформатированными данными)
  * @param call - информация о звонке (структура для записи данных)
  * @param startTime - начальный интервал времени
@@ -89,7 +88,7 @@ void readRates(tRates *rate, FILE *rates)
  * @return int - 0 или 1
  */
 int checkCall(float* resultSumm, int* countCalls, char* bufferCallInfo, tPhoneCall* call, tDateTime* startTime, tDateTime* endTime) {
-    int isSearch = 1;
+    int isSearch = 0;
     sscanf(bufferCallInfo, "%lld, %d, %d.%d.%d %d:%d:%d, %d",
             &call->phone_number, &call->code_service,
             &call->call_time.day, &call->call_time.month, &call->call_time.year,
@@ -102,7 +101,7 @@ int checkCall(float* resultSumm, int* countCalls, char* bufferCallInfo, tPhoneCa
         if (rates == NULL)
         {
             printf("Error opening file");
-            return 1;
+            return 0;
         }
         tRates rate;
         readRates(&rate, rates);
@@ -110,8 +109,8 @@ int checkCall(float* resultSumm, int* countCalls, char* bufferCallInfo, tPhoneCa
         if (call->code_service == rate.code)
         {
             *resultSumm += calculateSummCost(call, &rate);
-            *countCalls++;
-            isSearch = 0;
+            *countCalls += 1;
+            isSearch = 1;
             // printf("Phone Number: %lld, Code Service: %d, Duration: %d seconds\n",
             // call.phone_number, call.code_service, call.duration_in_seconds);
         }
@@ -134,7 +133,7 @@ int checkParams(char* buffer, FILE* report) {
         tPhoneCall call;
         float result_summ = 0;
         int count_calls = 0;
-        int is_search = 1;
+        int isSearch = 0;
 
         sscanf(buffer, "%d.%d.%d %d:%d:%d %d.%d.%d %d:%d:%d",
                &start_time.day, &start_time.month, &start_time.year,
@@ -151,14 +150,17 @@ int checkParams(char* buffer, FILE* report) {
 
         char buffer_call_info[100];
         while (fgets(buffer_call_info, 100, info_services))
-        {
-            is_search = checkCall(&result_summ, &count_calls, buffer_call_info, &call, &start_time, &end_time);
+        {   
+            if (checkCall(&result_summ, &count_calls, buffer_call_info, &call, &start_time, &end_time)) {
+                isSearch = 1;
+            }  
+            // printf("%d", isSearch);
         }
         fprintf(report, "%d, %2.2f, %02d.%02d.%02d %02d:%02d:%02d, %02d.%02d.%02d %02d:%02d:%02d\n", count_calls, result_summ,
                 start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
                 end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds);
         fclose(info_services);
-        if (is_search)
+        if (!isSearch)
         {
             wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - Нет данных\n",
                     start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
@@ -166,9 +168,9 @@ int checkParams(char* buffer, FILE* report) {
         }
         else
         {
-            wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - Данные проанализированы. Результаты выведены в файл Report.txt\n",
+            wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - Данные проанализированы. Результаты выведены в файл Report.txt. Кол-во звонков: %d\n",
                     start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
-                    end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds);
+                    end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds, count_calls);
         }
     }
     return 0;
