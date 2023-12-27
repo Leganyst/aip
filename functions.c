@@ -156,21 +156,24 @@ int checkParams(char* buffer, FILE* report) {
             }  
             // printf("%d", isSearch);
         }
-        fprintf(report, "%d, %2.2f, %02d.%02d.%02d %02d:%02d:%02d, %02d.%02d.%02d %02d:%02d:%02d\n", count_calls, result_summ,
-                start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
-                end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds);
         fclose(info_services);
         if (!isSearch)
         {
-            wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - Нет данных\n",
+            wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - No data\n",
                     start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
                     end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds);
+            fprintf(report, "%02d.%02d.%02d %02d:%02d:%02d, %02d.%02d.%02d %02d:%02d:%02d - No data\n", count_calls, result_summ,
+                start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
+                end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds);
         }
         else
         {
-            wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - Данные проанализированы. Результаты выведены в файл Report.txt. Кол-во звонков: %d\n",
+            wprintf(L"%02d.%02d.%02d %02d:%02d:%02d - %02d.%02d.%02d %02d:%02d:%02d - Данные проанализированы. Результаты выведены в файл Отчёт.txt. Кол-во звонков: %d\n",
                     start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
                     end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds, count_calls);
+            fprintf(report, "%d, %2.2f, %02d.%02d.%02d %02d:%02d:%02d, %02d.%02d.%02d %02d:%02d:%02d\n", count_calls, result_summ,
+                start_time.day, start_time.month, start_time.year, start_time.hour, start_time.minute, start_time.seconds,
+                end_time.day, end_time.month, end_time.year, end_time.hour, end_time.minute, end_time.seconds);
         }
     }
     return 0;
