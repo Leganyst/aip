@@ -45,6 +45,8 @@ int main(void)
     fclose(params);
     fclose(report);
 
+    system("pause");
+
     return 0;
 }
 
